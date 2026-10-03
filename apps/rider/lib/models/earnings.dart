@@ -1,3 +1,4 @@
+import '../utils/json.dart';
 import 'order.dart';
 
 /// Rider earnings summary, from GET /api/v1/rider/earnings.
@@ -13,10 +14,10 @@ class Earnings {
   factory Earnings.fromJson(Map<String, dynamic> json) {
     final trips = json['recent_trips'];
     return Earnings(
-      todayPaise: (json['today_paise'] as num?)?.toInt() ?? 0,
-      weekPaise: (json['week_paise'] as num?)?.toInt() ?? 0,
-      totalPaise: (json['total_paise'] as num?)?.toInt() ?? 0,
-      totalTrips: (json['total_trips'] as num?)?.toInt() ?? 0,
+      todayPaise: jsonInt(json['today_paise']),
+      weekPaise: jsonInt(json['week_paise']),
+      totalPaise: jsonInt(json['total_paise']),
+      totalTrips: jsonInt(json['total_trips']),
       recentTrips: trips is List
           ? trips
               .whereType<Map<String, dynamic>>()

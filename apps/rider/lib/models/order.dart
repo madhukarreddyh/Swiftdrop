@@ -1,5 +1,8 @@
+import '../utils/json.dart';
+
 /// A delivery order. Money is in PAISE (integers).
 /// Statuses: requested → assigned → picked_up → delivered (or cancelled).
+
 class DeliveryOrder {
   DeliveryOrder({
     required this.id,
@@ -29,19 +32,19 @@ class DeliveryOrder {
   factory DeliveryOrder.fromJson(Map<String, dynamic> json) {
     final customer = json['customer'];
     return DeliveryOrder(
-      id: (json['id'] as num).toInt(),
-      customerId: (json['customer_id'] as num?)?.toInt(),
-      riderId: (json['rider_id'] as num?)?.toInt(),
+      id: jsonInt(json['id']),
+      customerId: jsonIntOrNull(json['customer_id']),
+      riderId: jsonIntOrNull(json['rider_id']),
       pickupAddress: json['pickup_address'] as String? ?? '',
-      pickupLat: (json['pickup_lat'] as num?)?.toDouble() ?? 0,
-      pickupLng: (json['pickup_lng'] as num?)?.toDouble() ?? 0,
+      pickupLat: jsonDouble(json['pickup_lat']),
+      pickupLng: jsonDouble(json['pickup_lng']),
       dropAddress: json['drop_address'] as String? ?? '',
-      dropLat: (json['drop_lat'] as num?)?.toDouble() ?? 0,
-      dropLng: (json['drop_lng'] as num?)?.toDouble() ?? 0,
-      distanceKm: (json['distance_km'] as num?)?.toDouble() ?? 0,
-      farePaise: (json['fare_paise'] as num?)?.toInt() ?? 0,
-      platformFeePaise: (json['platform_fee_paise'] as num?)?.toInt() ?? 0,
-      riderEarningPaise: (json['rider_earning_paise'] as num?)?.toInt() ?? 0,
+      dropLat: jsonDouble(json['drop_lat']),
+      dropLng: jsonDouble(json['drop_lng']),
+      distanceKm: jsonDouble(json['distance_km']),
+      farePaise: jsonInt(json['fare_paise']),
+      platformFeePaise: jsonInt(json['platform_fee_paise']),
+      riderEarningPaise: jsonInt(json['rider_earning_paise']),
       parcelType: json['parcel_type'] as String?,
       status: json['status'] as String? ?? 'requested',
       paymentMode: json['payment_mode'] as String?,

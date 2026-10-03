@@ -1,4 +1,7 @@
+import '../utils/json.dart';
+
 /// Authenticated user, from POST /api/v1/auth/otp/verify.
+
 class AppUser {
   AppUser({
     required this.id,
@@ -10,7 +13,7 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      id: (json['id'] as num).toInt(),
+      id: jsonInt(json['id']),
       name: json['name'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       role: json['role'] as String? ?? 'customer',

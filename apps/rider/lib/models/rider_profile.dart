@@ -1,4 +1,7 @@
+import '../utils/json.dart';
+
 /// Delivery-partner profile, from the /api/v1/rider/* endpoints.
+
 class RiderProfile {
   RiderProfile({
     required this.userId,
@@ -17,18 +20,18 @@ class RiderProfile {
 
   factory RiderProfile.fromJson(Map<String, dynamic> json) {
     return RiderProfile(
-      userId: (json['user_id'] as num).toInt(),
+      userId: jsonInt(json['user_id']),
       aadhaar: json['aadhaar'] as String?,
       licenceNo: json['licence_no'] as String?,
       bikeRc: json['bike_rc'] as String?,
       bikeNumber: json['bike_number'] as String?,
       bankAccount: json['bank_account'] as String?,
       verificationStatus: json['verification_status'] as String? ?? 'pending',
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      totalTrips: (json['total_trips'] as num?)?.toInt() ?? 0,
+      rating: jsonDouble(json['rating']),
+      totalTrips: jsonInt(json['total_trips']),
       isOnline: json['is_online'] == true || json['is_online'] == 1,
-      lastLat: (json['last_lat'] as num?)?.toDouble(),
-      lastLng: (json['last_lng'] as num?)?.toDouble(),
+      lastLat: jsonDoubleOrNull(json['last_lat']),
+      lastLng: jsonDoubleOrNull(json['last_lng']),
     );
   }
 
