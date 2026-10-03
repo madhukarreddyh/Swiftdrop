@@ -43,10 +43,14 @@ Route::prefix('v1')->group(function () {
             Route::post('rider/location', [RiderController::class, 'updateLocation'])
                 ->middleware('throttle:30,1');
             Route::post('rider/documents', [RiderController::class, 'submitDocuments']);
+            Route::get('rider/offers', [RiderController::class, 'offers']);
             Route::get('rider/earnings', [RiderController::class, 'earnings']);
             Route::get('rider/orders', [RiderController::class, 'orders']);
             Route::get('rider/profile', [RiderController::class, 'profile_show']);
         });
+
+        // Partner application: any authenticated user may apply (v1).
+        Route::post('rider/apply', [RiderController::class, 'apply']);
 
         // Admin
         Route::middleware('role:admin')->prefix('admin')->group(function () {

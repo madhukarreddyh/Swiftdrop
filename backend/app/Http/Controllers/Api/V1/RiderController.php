@@ -120,6 +120,71 @@ class RiderController extends Controller
         return response()->json($this->profile($request));
     }
 
+    /**
+     * POST /api/v1/rider/apply
+     * Partner application: any authenticated user submits KYC details,
+     * which flips the account to role=rider with verification pending.
+     * An admin then approves via POST /admin/riders/{id}/verify.
+     * (Additive v1 endpoint for the rider app's onboarding flow.)
+     */
+    public function apply(Request $request)
+    {
+        $user = $request->user();
+
+        $profile = RiderProfile::firstOrCreate(['user_id' => $user->id]);
+        if ($profile->verification_status === 'approved') {
+            return response()->json([
+                'message' => 'You are already a verified partner.',
+                'code' => 'ALREADY_VERIFIED',
+            ], 422);
+        }
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'aadhaar' => ['required', 'string', 'max:20'],
+            'licence_no' => ['required', 'string', 'max:30'],
+            'bike_rc' => ['required', 'string', 'max:30'],
+            'bike_number' => ['required', 'string', 'max:20'],
+            'bank_account' => ['required', 'string', 'max:34'],
+        ]);
+
+        $user->update(['name' => $data['name'], 'role' => 'rider']);
+        $profile->update([
+            'aadhaar' => $data['aadhaar'],
+            'licence_no' => $data['licence_no'],
+            'bike_rc' => $data['bike_rc'],
+            'bike_number' => $data['bike_number'],
+            'bank_account' => $data['bank_account'],
+            'verification_status' => 'pending',
+        ]);
+
+        return response()->json([
+            'user' => $user->fresh()->only(['id', 'name', 'phone', 'role']),
+            'profile' => $profile->fresh(),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/rider/offers
+     * Pending order offers for this rider (status=requested, rider is a
+     * candidate, assignment not expired). Polled by the rider app every 15s
+     * in v1 (FCM push not wired yet).
+     * (Additive v1 endpoint for the rider app's incoming-order card.)
+     */
+    public function offers(Request $request)
+    {
+        $riderId = $request->user()->id;
+
+        $offers = Order::where('status', Order::STATUS_REQUESTED)
+            ->whereNotNull('assignment_expires_at')
+            ->where('assignment_expires_at', '>', now())
+            ->whereJsonContains('candidate_rider_ids', $riderId)
+            ->latest()
+            ->get();
+
+        return response()->json(['offers' => $offers]);
+    }
+
     private function profile(Request $request): RiderProfile
     {
         return RiderProfile::firstOrCreate(['user_id' => $request->user()->id]);
