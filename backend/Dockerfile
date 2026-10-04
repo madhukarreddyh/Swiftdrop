@@ -3,10 +3,10 @@ FROM php:8.3-cli
 
 # System dependencies and PHP extensions required by Laravel 12 + MySQL + Sanctum
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git unzip bison \
+        git unzip \
         libzip-dev libpng-dev libonig-dev libxml2-dev \
     && docker-php-ext-install -j$(nproc) \
-        pdo_mysql mbstring bcmath ctype fileinfo pcntl zip tokenizer xml opcache \
+        pdo_mysql mbstring bcmath ctype fileinfo pcntl zip xml opcache \
     && rm -rf /var/lib/apt/lists/*
 
 # Sensible PHP defaults for an API server
