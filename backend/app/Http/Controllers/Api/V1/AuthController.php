@@ -31,8 +31,11 @@ class AuthController extends Controller
 
         $response = ['message' => 'OTP sent.'];
 
-        // Dev only: return the code so the app can be tested without SMS.
-        if (config('app.debug')) {
+        // OTP test mode (OTP_DEBUG=true in .env): return the code so the app
+        // can be tested without an SMS provider. Rate limiting above still
+        // applies in test mode. NEVER enable in production — the code would
+        // be exposed to anyone who requests it.
+        if (config('otp.debug')) {
             $response['dev_code'] = $code;
         }
 

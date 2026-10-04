@@ -19,6 +19,8 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Test-only app key: web (session) tests need encryption. Not a production secret. -->
+        <env name="APP_KEY" value="base64:N+inO2qZg5Syv0wWsPVYVaqHi5Oo4OZGY7mN8H5ut5Q="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
@@ -36,5 +38,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- OTP test mode ON for the suite: existing tests read dev_code from the send response. -->
+        <env name="OTP_DEBUG" value="true"/>
     </php>
 </phpunit>

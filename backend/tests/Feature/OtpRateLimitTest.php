@@ -90,4 +90,41 @@ class OtpRateLimitTest extends SwiftDropTestCase
     {
         $this->getJson('/api/v1/orders', $this->jsonHeaders())->assertUnauthorized();
     }
+
+    public function test_otp_code_returned_when_test_mode_on(): void
+    {
+        config(['otp.debug' => true]);
+
+        $send = $this->postJson('/api/v1/auth/otp/send', ['phone' => '9876543210'], $this->jsonHeaders());
+        $send->assertOk()
+            ->assertJsonStructure(['message', 'dev_code']);
+
+        $this->assertMatchesRegularExpression('/^\d{4}$/', $send->json('dev_code'));
+    }
+
+    public function test_otp_code_hidden_when_test_mode_off(): void
+    {
+        config(['otp.debug' => false]);
+
+        $send = $this->postJson('/api/v1/auth/otp/send', ['phone' => '9876543210'], $this->jsonHeaders());
+        $send->assertOk()
+            ->assertJsonStructure(['message'])
+            ->assertJsonMissing(['dev_code']);
+    }
+
+    public function test_rate_limit_applies_even_when_test_mode_off(): void
+    {
+        config(['otp.debug' => false]);
+        $phone = '9876543210';
+
+        for ($i = 0; $i < 4; $i++) {
+            $this->postJson('/api/v1/auth/otp/send', ['phone' => $phone], $this->jsonHeaders())
+                ->assertOk()
+                ->assertJsonMissing(['dev_code']);
+        }
+
+        // 5th send within the hour → 429, regardless of test mode.
+        $this->postJson('/api/v1/auth/otp/send', ['phone' => $phone], $this->jsonHeaders())
+            ->assertStatus(429);
+    }
 }

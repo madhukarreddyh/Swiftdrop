@@ -27,7 +27,7 @@ class OtpService
 
     /**
      * Generate and store a login OTP. Returns the plain code so the
-     * controller can include it in dev responses (APP_DEBUG=true).
+     * controller can include it in test-mode responses (OTP_DEBUG=true).
      * In production a real SMS driver sends it instead.
      */
     public static function send(string $phone, string $purpose = 'login'): string
