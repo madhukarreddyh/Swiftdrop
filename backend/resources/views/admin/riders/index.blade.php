@@ -36,7 +36,21 @@
                 </td>
                 <td>{{ ($rider->riderProfile->is_online ?? false) ? 'Yes' : 'No' }}</td>
                 <td>{{ $rider->riderProfile->total_trips ?? 0 }}</td>
-                <td><a class="btn small ghost" href="{{ route('admin.riders.show', $rider) }}">View</a></td>
+                <td>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <a class="btn small ghost" href="{{ route('admin.riders.show', $rider) }}">View</a>
+                        <form class="inline-form" method="POST" action="{{ route('admin.riders.verify', $rider) }}">
+                            @csrf
+                            <input type="hidden" name="approved" value="1">
+                            <button class="btn small" type="submit">Approve</button>
+                        </form>
+                        <form class="inline-form" method="POST" action="{{ route('admin.riders.verify', $rider) }}">
+                            @csrf
+                            <input type="hidden" name="approved" value="0">
+                            <button class="btn small danger" type="submit">Reject</button>
+                        </form>
+                    </div>
+                </td>
             </tr>
         @empty
             <tr><td colspan="7" style="color: var(--muted);">No riders found.</td></tr>

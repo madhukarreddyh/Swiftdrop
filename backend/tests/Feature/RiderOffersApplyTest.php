@@ -20,6 +20,7 @@ class RiderOffersApplyTest extends SwiftDropTestCase
             'licence_no' => 'TS09 20210012345',
             'bike_rc' => 'TS09AB1234',
             'bike_number' => 'TS 09 AB 1234',
+            'vehicle_type' => 'bike',
             'bank_account' => '50100234567891',
         ];
     }
@@ -158,5 +159,60 @@ class RiderOffersApplyTest extends SwiftDropTestCase
         );
         // role:rider middleware forbids customers.
         $this->assertContains($res->getStatusCode(), [401, 403]);
+    }
+
+    public function test_apply_rejects_invalid_vehicle_type(): void
+    {
+        $customer = $this->makeCustomer('9876543260');
+
+        $payload = $this->applyPayload();
+        $payload['vehicle_type'] = 'truck';
+
+        $res = $this->postJson(
+            '/api/v1/rider/apply',
+            $payload,
+            $this->authHeaders($customer)
+        );
+
+        $res->assertStatus(422)->assertJsonValidationErrors('vehicle_type');
+        $this->assertFalse($customer->fresh()->isRider());
+    }
+
+    public function test_apply_rejects_missing_vehicle_type(): void
+    {
+        $customer = $this->makeCustomer('9876543261');
+
+        $payload = $this->applyPayload();
+        unset($payload['vehicle_type']);
+
+        $res = $this->postJson(
+            '/api/v1/rider/apply',
+            $payload,
+            $this->authHeaders($customer)
+        );
+
+        $res->assertStatus(422)->assertJsonValidationErrors('vehicle_type');
+        $this->assertFalse($customer->fresh()->isRider());
+    }
+
+    public function test_apply_accepts_bike_and_auto_vehicle_types(): void
+    {
+        foreach (['bike', 'auto'] as $i => $type) {
+            $customer = $this->makeCustomer('98765432' . (70 + $i));
+
+            $payload = $this->applyPayload();
+            $payload['vehicle_type'] = $type;
+
+            $res = $this->postJson(
+                '/api/v1/rider/apply',
+                $payload,
+                $this->authHeaders($customer)
+            );
+
+            $res->assertOk();
+            $profile = RiderProfile::where('user_id', $customer->id)->first();
+            $this->assertNotNull($profile);
+            $this->assertEquals($type, $profile->vehicle_type);
+        }
     }
 }

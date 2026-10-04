@@ -23,6 +23,7 @@
         <dt>Licence no.</dt><dd>{{ $rider->riderProfile->licence_no ?? '—' }}</dd>
         <dt>Bike RC</dt><dd>{{ $rider->riderProfile->bike_rc ?? '—' }}</dd>
         <dt>Bike number</dt><dd>{{ $rider->riderProfile->bike_number ?? '—' }}</dd>
+        <dt>Vehicle type</dt><dd>{{ ucfirst($rider->riderProfile->vehicle_type ?? 'bike') }}</dd>
         <dt>Bank account</dt><dd>{{ $rider->riderProfile->bank_account ?? '—' }}</dd>
         <dt>Joined</dt><dd>{{ $rider->created_at->format('d M Y, h:i A') }}</dd>
     </dl>

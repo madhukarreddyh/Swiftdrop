@@ -12,6 +12,7 @@ class RiderProfile extends Model
         'licence_no',
         'bike_rc',
         'bike_number',
+        'vehicle_type',
         'bank_account',
         'verification_status',
         'rating',

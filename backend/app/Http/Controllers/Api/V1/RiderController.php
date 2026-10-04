@@ -145,6 +145,7 @@ class RiderController extends Controller
             'licence_no' => ['required', 'string', 'max:30'],
             'bike_rc' => ['required', 'string', 'max:30'],
             'bike_number' => ['required', 'string', 'max:20'],
+            'vehicle_type' => ['required', 'in:bike,auto'],
             'bank_account' => ['required', 'string', 'max:34'],
         ]);
 
@@ -154,6 +155,7 @@ class RiderController extends Controller
             'licence_no' => $data['licence_no'],
             'bike_rc' => $data['bike_rc'],
             'bike_number' => $data['bike_number'],
+            'vehicle_type' => $data['vehicle_type'],
             'bank_account' => $data['bank_account'],
             'verification_status' => 'pending',
         ]);
