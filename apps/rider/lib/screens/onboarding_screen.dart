@@ -8,8 +8,8 @@ import '../theme.dart';
 import '../widgets/logo.dart';
 import 'verification_pending_screen.dart';
 
-/// Partner application: collects the 5 KYC documents and submits them via
-/// POST /rider/apply, which flips the account to role=rider (pending).
+/// Partner application: collects KYC documents plus vehicle type and submits
+/// them via POST /rider/apply, which flips the account to role=rider (pending).
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -24,6 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _rc = TextEditingController();
   final _bikeNumber = TextEditingController();
   final _bank = TextEditingController();
+  String _vehicleType = 'bike'; // 'bike' | 'auto'
   bool _busy = false;
   String? _error;
 
@@ -67,6 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         bikeRc: _rc.text.trim(),
         bikeNumber: _bikeNumber.text.trim().toUpperCase(),
         bankAccount: _bank.text.trim(),
+        vehicleType: _vehicleType,
       );
       await session.refreshProfile();
       if (!mounted) return;
@@ -89,6 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final vehicleLabel = _vehicleType == 'bike' ? 'Bike' : 'Auto';
     return Scaffold(
       appBar: AppBar(title: const Text('Become a partner')),
       body: SafeArea(
@@ -116,8 +119,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             _field(_aadhaar, 'Aadhaar number', '1234 5678 9012',
                 numeric: true),
             _field(_licence, 'Driving licence number', 'TS09 20210012345'),
-            _field(_rc, 'Bike RC number', 'TS09AB1234'),
-            _field(_bikeNumber, 'Bike number plate', 'TS 09 AB 1234'),
+            _vehicleSelector(),
+            _field(_rc, '$vehicleLabel RC number', 'TS09AB1234'),
+            _field(
+                _bikeNumber, '$vehicleLabel number plate', 'TS 09 AB 1234'),
             _field(_bank, 'Bank account number', '50100234567891',
                 numeric: true),
             if (_error != null) ...[
@@ -151,6 +156,75 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: const Text('Log out'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Bike / Auto selector. Defaults to Bike.
+  Widget _vehicleSelector() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Vehicle type',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.ink,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              _vehicleChip('bike', 'Bike', Icons.two_wheeler),
+              const SizedBox(width: 12),
+              _vehicleChip('auto', 'Auto', Icons.local_taxi),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _vehicleChip(String value, String label, IconData icon) {
+    final selected = _vehicleType == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _vehicleType = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.primary : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected
+                  ? AppColors.primary
+                  : const Color(0xFFD1D5DB),
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: selected ? Colors.white : AppColors.muted,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? Colors.white : AppColors.ink,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

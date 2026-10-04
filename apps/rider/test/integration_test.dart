@@ -103,6 +103,7 @@ void main() {
       bikeRc: 'TS09AB1234RC',
       bikeNumber: 'TS09AB1234',
       bankAccount: '1234567890123456',
+      vehicleType: 'bike',
     );
     expect(profile.verificationStatus, 'pending');
 

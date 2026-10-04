@@ -137,6 +137,7 @@ class ApiClient {
     required String bikeRc,
     required String bikeNumber,
     required String bankAccount,
+    required String vehicleType,
   }) async {
     final json = await _post('/rider/apply', {
       'name': name,
@@ -145,6 +146,7 @@ class ApiClient {
       'bike_rc': bikeRc,
       'bike_number': bikeNumber,
       'bank_account': bankAccount,
+      'vehicle_type': vehicleType,
     });
     final profile = json['profile'];
     return RiderProfile.fromJson(profile as Map<String, dynamic>);
