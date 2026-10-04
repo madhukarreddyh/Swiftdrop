@@ -48,8 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(
           builder: (_) => OtpScreen(
             phone: phone,
-            // In dev (APP_DEBUG=true) the backend returns the code directly.
-            devCode: res['code'] as String?,
+            // In test mode the backend returns the code as `dev_code`.
+            devCode: res['dev_code'] as String?,
           ),
         ),
       );
