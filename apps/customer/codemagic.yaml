@@ -1,0 +1,25 @@
+workflows:
+  rider-android-debug:
+    name: SwiftDrop Rider — Debug APK
+    instance_type: linux_x2
+    max_build_duration: 45
+    environment:
+      flutter: stable
+    working_directory: apps/rider
+    scripts:
+      - name: Get packages
+        script: flutter pub get
+      - name: Analyze
+        script: flutter analyze
+      - name: Run tests
+        script: flutter test
+      - name: Build debug APK
+        script: flutter build apk --debug
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
