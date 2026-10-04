@@ -240,7 +240,7 @@ class OrderController extends Controller
         }
 
         $response = ['message' => 'New OTP generated.'];
-        if (config('app.debug')) {
+        if (config('otp.debug')) {
             $response['dev_otp'] = $order->status === Order::STATUS_ASSIGNED
                 ? $order->pickup_otp
                 : $order->delivery_otp;
